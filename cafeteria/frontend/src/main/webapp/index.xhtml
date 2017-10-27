@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+<ui:composition template="layout.xhtml">
+
+    <ui:define name="title">MyCantina Home Page</ui:define>
+    <ui:define name="content">
+
+    <h:link value="Link to dishes" outcome="dishes.jsf"/> <br/>
+    <h:link value="Link to menu" outcome="menu.jsf"/>
+<hr/>
+
+
+        <c:choose>
+        <c:when test="#{menuController.menus.size() == 0}">
+            <h3>
+                <ui:insert name="availableMenu">No Menu available</ui:insert>
+            </h3>
+        </c:when>
+        <c:otherwise>
+
+            <h:link value="Show default" outcome="index.jsf"/> <br/>
+            <!--<h:link value="Show next (#{menuController.nextDate})" outcome="nextMenu.jsf"/>
+                <h:link value="Show previous (#{menuController.previousDate})" outcome="previousMenu.jsf"/>-->
+
+        <h:dataTable value="#{menuController.dishes}" var="menu" border="1" id="current">
+            <h3>
+                <ui:insert name="currentMenu">Menu for #{menuController.currentDate}</ui:insert>
+            </h3>
+        <h:column>
+            <!-- column header -->
+            <f:facet name="header">Name</f:facet>
+            <!-- row record -->
+            <h:outputText value="#{menu.name}"/>
+
+        </h:column>
+
+        <h:column>
+
+            <f:facet name="header">Description</f:facet>
+            <h:outputText value="#{menu.description}"/>
+
+        </h:column>
+        </h:dataTable>
+        </c:otherwise>
+        </c:choose>
+<hr/>
+    </ui:define>
+</ui:composition>
+        </html>

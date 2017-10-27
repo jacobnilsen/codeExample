@@ -1,0 +1,321 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.cafeteria.app</groupId>
+    <artifactId>cafeteria</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <name>cafeteria</name>
+
+    <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <wildfly.version>10.1.0.Final</wildfly.version>
+    <jbossTarget>${basedir}/target/downloaded_Wildfly</jbossTarget>
+    <jbossHome>${jbossTarget}/wildfly-${wildfly.version}</jbossHome>
+    </properties>
+
+    <modules>
+        <module>backend</module>
+        <module>frontend</module>
+    </modules>
+
+<dependencyManagement>
+<dependencies>
+
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.12</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>javax</groupId>
+    <artifactId>javaee-api</artifactId>
+    <version>7.0</version>
+    <scope>provided</scope>
+</dependency>
+
+<dependency>
+    <groupId>commons-codec</groupId>
+    <artifactId>commons-codec</artifactId>
+    <version>1.10</version>
+</dependency>
+
+<dependency>
+    <groupId>org.jboss.spec</groupId>
+    <artifactId>jboss-javaee-7.0</artifactId>
+    <version>1.0.4.Final</version>
+    <!-- Import all libraries definitions in this dependency pom file  -->
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+
+
+<dependency>
+    <groupId>org.hibernate.javax.persistence</groupId>
+    <artifactId>hibernate-jpa-2.1-api</artifactId>
+    <version>1.0.0.Final</version>
+    <scope>provided</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>5.3.4.Final</version>
+    <scope>provided</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.2.9.Final</version>
+    <scope>provided</scope>
+</dependency>
+
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <version>1.4.194</version>
+    <scope>provided</scope>
+</dependency>
+
+
+<dependency>
+    <groupId>org.wildfly.arquillian</groupId>
+    <artifactId>wildfly-arquillian-container-managed</artifactId>
+    <version>1.1.0.Final</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.jboss.arquillian.junit</groupId>
+    <artifactId>arquillian-junit-container</artifactId>
+    <version>1.1.11.Final</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- Following 2 dependencies are important to get coverage with Arquillian -->
+<dependency>
+    <groupId>org.jboss.arquillian.extension</groupId>
+    <artifactId>arquillian-jacoco</artifactId>
+    <version>1.0.0.Alpha8</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.jboss.arquillian</groupId>
+    <artifactId>arquillian-bom</artifactId>
+    <version>1.1.13.Final</version>
+    <!--
+        This is bit tricky. The Arquillian ecosystem defines
+        many different dependencies, but often you will just need
+        only some of them.
+        However, you do not want to mix different versions.
+        By "import" a BOM (Bill Of Materials) pom file, you practically
+        define all those dependencies here in this <dependencyManagement>
+        having all the same version.
+
+        See:
+        https://mvnrepository.com/artifact/org.jboss.arquillian/arquillian-bom/1.1.11.Final
+        https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html
+    -->
+    <scope>import</scope>
+    <type>pom</type>
+</dependency>
+
+<dependency>
+    <groupId>org.jacoco</groupId>
+    <artifactId>org.jacoco.core</artifactId>
+    <version>0.7.5.201505241946</version>
+    <scope>test</scope>
+</dependency>
+    <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-arquillian-container-remote</artifactId>
+        <version>8.0.0.Final</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-client</artifactId>
+        <version>3.1.0.Final</version>
+    </dependency>
+
+    <dependency>
+        <!-- used to control a browser for system testing -->
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-java</artifactId>
+        <version>2.53.1</version>
+        <scope>test</scope>
+    </dependency>
+
+</dependencies>
+</dependencyManagement>
+
+<build>
+
+
+<plugins>
+    <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>1.2.0.Alpha4</version>
+        <configuration>
+            <!--
+                If jbossHome is not specified, this plugin will download it.
+                Here, we point to the same installation done for the unit tests
+                with the maven-dependency-plugin, as to avoid double download/installation
+              -->
+            <jbossHome>${jbossHome}</jbossHome>
+            <add-user>
+                <users>
+                    <user>
+                        <username>admin</username>
+                        <password>admin</password>
+                    </user>
+                </users>
+            </add-user>
+            <java-opts>
+                <!-- comment out if need to attach a remote debugger -->
+                <!--<javaOpt>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005</javaOpt>-->
+            </java-opts>
+            <hostname>127.0.0.1</hostname>
+            <port>9990</port>
+            <name>Cafeteria.war</name>
+        </configuration>
+        <executions>
+
+            <!--
+                for list of Maven phases, see
+
+                https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference
+
+                for Wildfly plugin goals, see
+
+                https://docs.jboss.org/wildfly/plugins/maven/latest/usage.html
+            -->
+            <execution>
+                <!--
+                    This means:
+                    when Maven is executing the "pre-integration-test" phase of the build,
+                    then this plugin will execute the commands "start" (which does start WildFly)
+                    and then "deploy" (which deploy the compiled/packaged WAR of the project)
+                -->
+                <id>init</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                    <goal>start</goal>
+                    <!--
+                    this starts WildFly asynchronously, ie non-blocking as "run" would do.
+                    When running tests from IDE, can start WildFly with "mvn wildfly:run"
+                     -->
+                    <goal>deploy</goal>
+                </goals>
+            </execution>
+            <execution>
+                <id>shutdown</id>
+                <!--
+                    WARNING: when integration tests fail, still the
+                    post-integration-test phase is executed.
+                    However, it seems there are issues with this plugin (or Failsafe),
+                    in which that phase is not executed.
+                    This means that, if you have any failing Selenium test, then
+                    Wildfly process will be left running, and you need to kill it
+                    manually.
+                -->
+                <phase>post-integration-test</phase>
+                <goals>
+                    <goal>undeploy</goal>
+                    <goal>shutdown</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+
+    <!--
+        Avoid failing War generation if web.xml is missing, as we ll not
+        use it in some example modules
+    -->
+    <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+            <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+    </plugin>
+
+
+    <!-- Make sure that Wildfly is automatically downloaded and installed -->
+
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>unpack</id>
+                <phase>process-test-classes</phase>
+                <goals>
+                    <goal>unpack</goal>
+                </goals>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>org.wildfly</groupId>
+                            <artifactId>wildfly-dist</artifactId>
+                            <version>${wildfly.version}</version>
+                            <type>zip</type>
+                            <overWrite>false</overWrite>
+                            <outputDirectory>${jbossTarget}</outputDirectory>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+
+    <!-- make sure we calculate code coverage -->
+
+
+
+    <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.8</version>
+        <executions>
+            <execution>
+                <id>default-prepare-agent</id>
+                <goals>
+                    <goal>prepare-agent</goal>
+                </goals>
+            </execution>
+            <execution>
+                <id>default-report</id>
+                <phase>prepare-package</phase>
+                <goals>
+                    <goal>report</goal>
+                </goals>
+            </execution>
+            <execution>
+                <id>default-prepare-agent-integration</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>prepare-agent-integration</goal>
+                </goals>
+            </execution>
+            <execution>
+                <id>default-report-integration</id>
+                <goals>
+                    <goal>report-integration</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
+
+
+
+</build>
+
+        </project>

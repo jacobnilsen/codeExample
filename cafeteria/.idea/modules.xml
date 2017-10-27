@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/cafeteria.iml" filepath="$PROJECT_DIR$/cafeteria.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/cafeteria-backend.iml" filepath="$PROJECT_DIR$/backend/cafeteria-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frontend/cafeteria-frontend.iml" filepath="$PROJECT_DIR$/frontend/cafeteria-frontend.iml" />
+    </modules>
+  </component>
+</project>

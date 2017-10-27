@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core" xml:lang="en" lang="en">
+
+<ui:composition template="layout.xhtml">
+
+    <ui:define name="title">Menu</ui:define>
+    <ui:define name="content">
+
+        <c:choose>
+        <c:when test="#{dishController.dishes.size() == 0}">
+            <h:outputText value="No dishes yet :( Be the first to create one!"/>
+        </c:when>
+
+        <c:otherwise>
+
+
+        <h:form id="createMenu">
+            <h:panelGrid columns="1">
+                <h:outputLabel value="Date: "/>
+                <h:inputText value="#{createMenuController.formDate}" binding="#{menuController.inputComponent}" id="date"/>
+            </h:panelGrid>
+            <h:commandButton value="Create" action="#{createMenuController.createMenu}" id="createButton"/>
+        <h:dataTable value="#{dishController.dishes}" var="dishes" border="1">
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Name</f:facet>
+                <!-- row record  -->
+                #{dishes.name}
+            </h:column>
+
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Include</f:facet>
+                <!-- row record  #{d.Name}-->
+
+                <h:selectBooleanCheckbox value="#{createMenuController.checked[dishes.name]}" />
+            </h:column>
+            ...
+        </h:dataTable>
+        </h:form>
+        </c:otherwise>
+        </c:choose>
+        <hr/>
+    </ui:define>
+</ui:composition>
+</html>
